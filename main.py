@@ -113,8 +113,8 @@ def main():
             "pacman",
             player.pos[0],
             player.pos[1],
-            CELL_SIZE,
-            CELL_SIZE,
+            25,
+            25,
             angle
         )
 
