@@ -39,7 +39,6 @@ def load_assets():
     load_texture("heart_broken", "assets/broken-heart.png")
 
 def get_safe_pos(target_pos, positions_list, min_dist):
-    # نختار فقط النقاط التي تبعد عن الهدف أكثر من المسافة المحددة
     safe_choices = [p for p in positions_list if distance(target_pos, vec(*p)) > min_dist]
     return vec(*random.choice(safe_choices if safe_choices else positions_list))
 
@@ -74,14 +73,9 @@ def draw_text(window, text, x, y, size=30):
     glDeleteTextures(1, [tex])
 
 def draw_retry_button():
-    # رسم مستطيل الزر (خلفية زرقاء)
     glColor3f(0.1, 0.3, 0.7)
-    glRectf(-110, -320, 110, -240) # وضعته في الأسفل تحت نص الـ Score
-    
-    # رسم كلمة RETRY باللون الأبيض
+    glRectf(-110, -320, 110, -240) 
     glColor3f(1, 1, 1)
-    # ملاحظة: سنستخدم دالة draw_text التي عرفناها سابقاً
-    # تأكدي من إحداثيات النص ليكون فوق الزر
     draw_text(None, "RETRY", -45, -270, 35)
 
 
@@ -105,11 +99,7 @@ def show_win_screen(window, score):
     while not glfw.window_should_close(window):
         glClear(GL_COLOR_BUFFER_BIT)
         glLoadIdentity()
-        
-        # رسم الخلفية
-        draw_texture("win_ui", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) 
-        
-        # رسم نص النتيجة
+        draw_texture("win_ui", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)         
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_TEXTURE_2D)
@@ -125,13 +115,10 @@ def show_win_screen(window, score):
         glEnd()
         glDisable(GL_TEXTURE_2D)
 
-        # استدعاء الزر
         draw_retry_button()
 
-        # فحص الضغط على الزر
         if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
             mouse_x, mouse_y = glfw.get_cursor_pos(window)
-            # الإحداثيات المتوافقة مع مكان الزر في الأسفل
             if (SCREEN_WIDTH/2 - 120) < mouse_x < (SCREEN_WIDTH/2 + 120) and \
                (SCREEN_HEIGHT/2 + 150) < mouse_y < (SCREEN_HEIGHT/2 + 220):
                 return "RESTART"
@@ -143,7 +130,7 @@ def show_win_screen(window, score):
 
 
 def show_game_over_screen(window, score):
-    """شاشة الخسارة"""
+  
     try:
         font = pygame.font.SysFont("Impact", 65) 
     except:
@@ -163,7 +150,6 @@ def show_game_over_screen(window, score):
         glClear(GL_COLOR_BUFFER_BIT)
         glLoadIdentity()
         
-        # رسم خلفية جيم أوفر
         draw_texture("game_over_ui", 0, 50, SCREEN_WIDTH, 1000) 
         
         glEnable(GL_BLEND)
@@ -181,10 +167,8 @@ def show_game_over_screen(window, score):
         glEnd()
         glDisable(GL_TEXTURE_2D)
 
-        # استدعاء الزر
         draw_retry_button()
 
-        # فحص الضغط على الزر
         if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
             mouse_x, mouse_y = glfw.get_cursor_pos(window)
             if (SCREEN_WIDTH/2 - 120) < mouse_x < (SCREEN_WIDTH/2 + 120) and \
@@ -212,10 +196,8 @@ def main():
     walls, pellets, power = calculate_maze_data()
 
     player = Player(walls)
-   # نضع اللاعب أولاً
     player.pos = vec(*random.choice(pellets))
     
-    # نضع الأشباح بعيداً عنه بمسافة 300 بيكسل مثلاً
     enemies = []
     for _ in range(ENEMY_NUMBER):
         start_p = get_safe_pos(player.pos, pellets, 300)
@@ -244,20 +226,17 @@ def main():
         
         player.move(dt)
 
-        win_margin = 10  # قللت المسافة شوية عشان يلقط الفوز بسرعة
+        win_margin = 10  
         if abs(player.pos[0]) > (SCREEN_WIDTH/2 - win_margin) or \
            abs(player.pos[1]) > (SCREEN_HEIGHT/2 - win_margin):
             
-            # نوقف اللاعب مكانه عشان ميفضلش يتحرك بره الشاشة
             player.set_dir(0, 0) 
             
             if "win" in sounds:
                 sounds["win"].play()
             
-            # إظهار شاشة الفوز
             show_win_screen(window, player.score)
             
-            # نقفل اللعبة بعد ما الشاشة تخلص
             glfw.set_window_should_close(window, True)
             break
         
@@ -275,10 +254,7 @@ def main():
                     glfw.set_window_should_close(window, True)
                     break
                 else:
-                    # عند العودة للحياة (Respawn)
-                    # 1. نختار مكان جديد للاعب
                     player.pos = vec(*random.choice(pellets))
-                    # 2. نبعد كل الأشباح عن مكان اللاعب الجديد فوراً
                     for enemy_to_reset in enemies:
                         enemy_to_reset.pos = get_safe_pos(player.pos, pellets, 300)
                 break
@@ -334,23 +310,18 @@ def main():
 
         glDisable(GL_BLEND) 
 
-# ... (بعد رسم باك مان والأشباح) ...
 
-        # --- RENDER UI (داخل منطقة الـ Blend) ---
+        # --- RENDER  ---
         glLoadIdentity()
         
-        # 1. رسم عداد النقاط
         draw_text(window, f"Score: {player.score}", -SCREEN_WIDTH/2 + 20, SCREEN_HEIGHT/2 - 20, 35)
 
-        # 2. رسم القلوب
-       # 2. رسم القلوب
         max_lives = 5 
         heart_size = 30
         start_x = SCREEN_WIDTH/2 - 220 
         y_pos = SCREEN_HEIGHT/2 - 40
 
         for i in range(max_lives):
-            # التأكد أن الاسم "heart_broken" مطابق تماماً لـ load_assets
             heart_type = "heart_red" if i < player.lives else "heart_broken"
             
             draw_texture(
@@ -361,7 +332,7 @@ def main():
                 heart_size
             )
 
-        glDisable(GL_BLEND) # نقفل الـ Blend هنا في الآخر خالص
+        glDisable(GL_BLEND) 
 
         glfw.swap_buffers(window)
         time.sleep(0.01)
