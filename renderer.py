@@ -2,7 +2,7 @@ from OpenGL.GL import *
 from numpy import cos, sin
 from constants import *
 from PIL import Image
-
+import pygame
 textures = {}
 
 def load_texture(name, path):
@@ -91,3 +91,26 @@ def draw_texture_rotated(name, x, y, w, h, angle):
     glPopMatrix()
 
     glDisable(GL_TEXTURE_2D)
+
+    
+def draw_text(text, x, y, size=36, color=(255, 255, 255)):  
+    font = pygame.font.SysFont("Arial", size)
+    text_surface = font.render(text, True, color)
+    text_data = pygame.image.tostring(text_surface, "RGBA", True)
+    
+    width, height = text_surface.get_size()
+    
+    tex_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, tex_id)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text_data)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    
+    glEnable(GL_TEXTURE_2D)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0, 0); glVertex2f(x - width/2, y - height/2)
+    glTexCoord2f(1, 0); glVertex2f(x + width/2, y - height/2)
+    glTexCoord2f(1, 1); glVertex2f(x + width/2, y + height/2)
+    glTexCoord2f(0, 1); glVertex2f(x - width/2, y + height/2)
+    glEnd()
+    glDisable(GL_TEXTURE_2D)
+    glDeleteTextures([tex_id]) # نمسحه عشان ميملاش الذاكرة
