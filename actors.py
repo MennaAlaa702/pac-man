@@ -10,7 +10,7 @@ class Player:
         self.speed = PLAYER_MOVE_SPEED
         self.walls = walls
 
-        self.lives = 3
+        self.lives = 5
         self.score = 0
         self.anim_timer = 0
         self.anim_frame = 0      
@@ -26,17 +26,8 @@ class Player:
         if not self.collides(next_pos):
             self.pos = next_pos
 
-        self.wrap()
+        # self.wrap()
 
-    def wrap(self):
-        if self.pos[0] < -SCREEN_WIDTH/2:
-            self.pos[0] = SCREEN_WIDTH/2
-        if self.pos[0] > SCREEN_WIDTH/2:
-            self.pos[0] = -SCREEN_WIDTH/2
-        if self.pos[1] < -SCREEN_HEIGHT/2:
-            self.pos[1] = SCREEN_HEIGHT/2
-        if self.pos[1] > SCREEN_HEIGHT/2:
-            self.pos[1] = -SCREEN_HEIGHT/2
 
     def collides(self, pos):
         for w in self.walls:
