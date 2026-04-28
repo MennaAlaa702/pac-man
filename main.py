@@ -3,7 +3,7 @@ from OpenGL.GL import *
 import time
 import random
 import pygame
-
+import math
 from constants import *
 from renderer import *
 from maze import calculate_maze_data
@@ -26,7 +26,7 @@ def load_assets():
     load_texture("enemy", "assets/enemy.gif")
     #load_texture("pellet", "assets/pellet.png")
     load_texture("power", "assets/power.png")
-
+    load_texture("start", "assets/start.png")
 
 def main():
     # حالات اللعبة
@@ -37,7 +37,9 @@ def main():
 
     start_timer = 3.0  # مؤقت البداية
     popup_timer = 0    # مؤقت رسالة الـ +20
-    show_popup = False
+    score_popup = False
+    win_popup = False
+    lose_popup = False
 
     if not glfw.init():
         return
@@ -107,12 +109,17 @@ def main():
                     sounds["eat"].play()
                     power.remove(p)
                     player.score += 20 # خليتها 20 زي ما طلبتي في الرسالة
-                    show_popup = True
+                    score_popup = True
                     popup_timer = 1.5
 
             # WIN CHECK
-            if len(pellets) == 0:
-                game_state = GAME_WIN
+        # if len(pellets) == 0:
+        #     win_popup = True
+        #     popup_timer = 3.0
+                    
+
+        if len(pellets) == 0 :
+            game_state = GAME_WIN
 
         elif game_state == GAME_WIN:
             # إعادة اللعب عند الضغط
@@ -125,8 +132,16 @@ def main():
         glLoadIdentity()
 
         if game_state == GAME_START:
-            draw_text("START GAME", 0, 0, size=70)
-            draw_text(f"Starting in {int(start_timer) + 1}...", 0, -60, size=30)
+            # draw_text("Get Ready !", 5, -5, size=90, color=(190, 100, 0), fontname="Showcard Gothic")
+            # draw_text("Get Ready !", 0, 0, size=90, color=(255, 215, 0), fontname="Showcard Gothic")
+            # pulse = math.sin(time.time() * 7) * 7
+            # dynamic_size = 90 + int(pulse)
+            # draw_text("Get Ready !", 5, -5, size=dynamic_size, color=(190, 100, 0), fontname="Showcard Gothic")
+            # draw_text("Get Ready !", 0, 0, size=dynamic_size, color=(255, 215, 0), fontname="Showcard Gothic")
+            #draw_text(f"Starting in {int(start_timer) + 1}...", 0, -60, size=30)
+            draw_texture("start", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+            draw_text(f"Starting in {int(start_timer) + 1}...", 0, -300, size=30 , color=(255,255,255))
+            
 
         elif game_state == GAME_PLAYING:
             for w in walls: draw_texture("wall", w[0], w[1], CELL_SIZE, CELL_SIZE)
@@ -138,11 +153,18 @@ def main():
             for e in enemies: draw_texture("enemy", e.pos[0], e.pos[1], CELL_SIZE, CELL_SIZE)
             
             # تحديث وقت الـ Popup
-            if show_popup:
+            if score_popup:
                 draw_text("+20 SCORE!", player.pos[0], player.pos[1] + 40, size=24, color=(255, 255, 0))
                 popup_timer -= dt
                 if popup_timer <= 0:
-                    show_popup = False
+                    score_popup = False
+
+            # if win_popup:
+            #     draw_text("GOOD!", 0, 0, size=100, color=(0, 255, 0),fontname="Cooper Black")
+            #     popup_timer -= dt
+            #     if popup_timer <= 0:
+            #         win_popup = False
+            #         game_state = GAME_WIN  
 
         elif game_state == GAME_WIN:
             draw_text("YOU WIN!", 0, 100, size=80, color=(0, 255, 0))
