@@ -15,8 +15,8 @@ pygame.font.init()
 def init_audio():
     pygame.mixer.init()
     sounds = {
-        "eat": pygame.mixer.Sound("D:/IT/3rd year/SECOUND TERM/IT354 COMPUTER GRAPHICS/PROJECT/assets/eat.wav"),
-        "death": pygame.mixer.Sound("D:/IT/3rd year/SECOUND TERM/IT354 COMPUTER GRAPHICS/PROJECT/assets/death.wav"),
+        "eat": pygame.mixer.Sound("assets/eat.wav"),
+        "death": pygame.mixer.Sound("assets/death.wav"),
         #"start": pygame.mixer.Sound("assets/start.wav"),
     }
     return sounds
