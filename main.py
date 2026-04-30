@@ -26,7 +26,10 @@ def init_audio():
 
 
 def load_assets():
+    load_texture("first_bg", "assets/starting.jpg")
+
     load_texture("pacman", "assets/pacman.gif")
+    load_texture("pacman_closed", "assets/pacman_closed.gif")
     load_texture("wall", "assets/wall.gif")
     # load_texture("enemy", "assets/enemy.gif")
     load_texture("pellet", "assets/pellet.png")
@@ -45,150 +48,13 @@ def get_safe_pos(target_pos, positions_list, min_dist):
     safe_choices = [p for p in positions_list if distance(target_pos, vec(*p)) > min_dist]
     return vec(*random.choice(safe_choices if safe_choices else positions_list))
 
-def draw_text(text, x, y, size=30):
-    try:
-        font = pygame.font.SysFont("Impact", size) 
-    except:
-        font = pygame.font.SysFont("Arial", size, bold=True)
-
-    text_surface = font.render(text, True, (255, 255, 255))
-    text_data = pygame.image.tostring(text_surface, "RGBA", True)
-    width, height = text_surface.get_size()
-
-    tex = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, tex)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text_data)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    glEnable(GL_TEXTURE_2D)
-    
-    glBegin(GL_QUADS)
-    glTexCoord2f(0, 0); glVertex2f(x, y - height)
-    glTexCoord2f(1, 0); glVertex2f(x + width, y - height)
-    glTexCoord2f(1, 1); glVertex2f(x + width, y)
-    glTexCoord2f(0, 1); glVertex2f(x, y)
-    glEnd()
-
-    glDisable(GL_TEXTURE_2D)
-    glDeleteTextures(1, [tex])
-
-def draw_retry_button():
-    glColor3f(0.1, 0.3, 0.7)
-    glRectf(-110, -320, 110, -240) 
-    glColor3f(1, 1, 1)
-    draw_text("RETRY", -45, -270, 35)
-
-
-def show_win_screen(window, score):
-    try:
-        font = pygame.font.SysFont("Impact", 65) 
-    except:
-        font = pygame.font.SysFont("Arial", 65, bold=True)
-
-    text_surface = font.render(f"Final Score: {score}", True, (255, 255, 255))
-    text_data = pygame.image.tostring(text_surface, "RGBA", True)
-    width, height = text_surface.get_size()
-
-    text_texture = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, text_texture)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text_data)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-
-    while not glfw.window_should_close(window):
-        glClear(GL_COLOR_BUFFER_BIT)
-        glLoadIdentity()
-        draw_texture("win_ui", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)         
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, text_texture)
-        
-        glBegin(GL_QUADS)
-        half_w, half_h = width / 2, height / 2
-        y_text_offset = -200  
-        glTexCoord2f(0, 0); glVertex2f(-half_w, y_text_offset - half_h)
-        glTexCoord2f(1, 0); glVertex2f(half_w, y_text_offset - half_h)
-        glTexCoord2f(1, 1); glVertex2f(half_w, y_text_offset + half_h)
-        glTexCoord2f(0, 1); glVertex2f(-half_w, y_text_offset + half_h)
-        glEnd()
-        glDisable(GL_TEXTURE_2D)
-
-        draw_retry_button()
-
-        if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
-            mouse_x, mouse_y = glfw.get_cursor_pos(window)
-            if (SCREEN_WIDTH/2 - 120) < mouse_x < (SCREEN_WIDTH/2 + 120) and \
-               (SCREEN_HEIGHT/2 + 150) < mouse_y < (SCREEN_HEIGHT/2 + 220):
-                return "RESTART"
-
-        glfw.swap_buffers(window)
-        glfw.poll_events()
-
-    glDeleteTextures(1, [text_texture])
-
-
-def show_game_over_screen(window, score):
-  
-    try:
-        font = pygame.font.SysFont("Impact", 65) 
-    except:
-        font = pygame.font.SysFont("Arial", 65, bold=True)
-
-    text_surface = font.render(f"Final Score: {score}", True, (255, 255, 255))
-    text_data = pygame.image.tostring(text_surface, "RGBA", True)
-    width, height = text_surface.get_size()
-
-    text_texture = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, text_texture)
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text_data)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-
-    while not glfw.window_should_close(window):
-        glClear(GL_COLOR_BUFFER_BIT)
-        glLoadIdentity()
-        
-        draw_texture("game_over_ui", 0, 50, SCREEN_WIDTH, 1000) 
-        
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, text_texture)
-        
-        glBegin(GL_QUADS)
-        half_w, half_h = width / 2, height / 2
-        y_text_offset = -50 
-        glTexCoord2f(0, 0); glVertex2f(-half_w, y_text_offset - half_h)
-        glTexCoord2f(1, 0); glVertex2f(half_w, y_text_offset - half_h)
-        glTexCoord2f(1, 1); glVertex2f(half_w, y_text_offset + half_h)
-        glTexCoord2f(0, 1); glVertex2f(-half_w, y_text_offset + half_h)
-        glEnd()
-        glDisable(GL_TEXTURE_2D)
-
-        draw_retry_button()
-
-        if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
-            mouse_x, mouse_y = glfw.get_cursor_pos(window)
-            if (SCREEN_WIDTH/2 - 120) < mouse_x < (SCREEN_WIDTH/2 + 120) and \
-               (SCREEN_HEIGHT/2 + 150) < mouse_y < (SCREEN_HEIGHT/2 + 220):
-                return "RESTART"
-
-        glfw.swap_buffers(window)
-        glfw.poll_events()
-
-    glDeleteTextures(1, [text_texture])
-
-
 def main():
     # حالات اللعبة
+    GAME_MENU = -1
     GAME_START = 0
     GAME_PLAYING = 1
     GAME_WIN = 2
-    game_state = GAME_START
+    game_state = GAME_MENU
 
     start_timer = 3.0  # مؤقت البداية
     popup_timer = 0    # مؤقت رسالة الـ +20
@@ -230,7 +96,14 @@ def main():
         glfw.poll_events()
 
         # --- 1. UPDATE LOGIC ---
-        if game_state == GAME_START:
+        if game_state == GAME_MENU:
+            # لو ضغط Enter أو كليك يسار بالماوس يبدأ العد التنازلي
+            if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS or \
+               glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
+                game_state = GAME_START
+                time.sleep(0.2) # تأخير بسيط لمنع تكرار الضغطة
+
+        elif game_state == GAME_START:
             start_timer -= dt
             if start_timer <= 0:
                 game_state = GAME_PLAYING
@@ -246,6 +119,7 @@ def main():
             #UPDATE
             
             player.move(dt)
+            player.update_animation(dt)
 
             win_margin = 10  
             if abs(player.pos[0]) > (SCREEN_WIDTH/2 - win_margin) or \
@@ -257,10 +131,26 @@ def main():
                 if "win" in sounds:
                     sounds["win"].play()
                 
-                show_win_screen(window, player.score)
+                result = show_win_screen(window, player.score)
                 
-                glfw.set_window_should_close(window, True)
-                break
+                if result == "RESTART":
+                    # إعادة ضبط اللعبة بالكامل للرجوع لشاشة البداية
+                    game_state = GAME_START
+                    start_timer = 3.0
+                    walls, pellets, power = calculate_maze_data()
+                    player = Player(walls)
+                    if pellets:
+                        player.pos = vec(*random.choice(pellets))
+                    enemies = []
+                    for _ in range(ENEMY_NUMBER):
+                        start_p = get_safe_pos(player.pos, pellets, 300)
+                        enemies.append(Enemy(start_p[0], start_p[1], walls, player))
+                    last_time = time.time()
+                    continue # نتخطى باقي الكود في اللفة دي ونبدأ من جديد
+                else:
+                    # لو قفل الشاشة من علامة (X)
+                    glfw.set_window_should_close(window, True)
+                    break
             
             for e in enemies:
                 e.move(dt)
@@ -272,13 +162,31 @@ def main():
 
                     if player.lives <= 0:
                         sounds["game_over"].play()
-                        show_game_over_screen(window, player.score)
-                        glfw.set_window_should_close(window, True)
-                        break
+                        result = show_game_over_screen(window, player.score)
+                        
+                        if result == "RESTART":
+                            # إعادة ضبط اللعبة بالكامل للرجوع لشاشة البداية
+                            game_state = GAME_START
+                            start_timer = 3.0
+                            walls, pellets, power = calculate_maze_data()
+                            player = Player(walls)
+                            if pellets:
+                                player.pos = vec(*random.choice(pellets))
+                            enemies = []
+                            for _ in range(ENEMY_NUMBER):
+                                start_p = get_safe_pos(player.pos, pellets, 300)
+                                enemies.append(Enemy(start_p[0], start_p[1], walls, player))
+                            last_time = time.time()
+                            break # نخرج من حلقة الأعداء عشان نبدأ من جديد
+                        else:
+                            # لو قفل الشاشة من علامة (X)
+                            glfw.set_window_should_close(window, True)
+                            break
                     else:
+                        # الجزء ده هو اللي بيرجع باكمان والأشباح لأماكنهم لو لسه فيه قلوب
                         if pellets:
                             player.pos = vec(*random.choice(pellets))
-                            
+
                         for enemy_to_reset in enemies:
                             enemy_to_reset.pos = get_safe_pos(player.pos, pellets, 300)
                     break
@@ -319,16 +227,16 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT)
         glLoadIdentity()
 
-        if game_state == GAME_START:
-            # draw_text("Get Ready !", 5, -5, size=90, color=(190, 100, 0), fontname="Showcard Gothic")
-            # draw_text("Get Ready !", 0, 0, size=90, color=(255, 215, 0), fontname="Showcard Gothic")
-            # pulse = math.sin(time.time() * 7) * 7
-            # dynamic_size = 90 + int(pulse)
-            # draw_text("Get Ready !", 5, -5, size=dynamic_size, color=(190, 100, 0), fontname="Showc ard Gothic")
-            # draw_text("Get Ready !", 0, 0, size=dynamic_size, color=(255, 215, 0), fontname="Showcard Gothic")
-            #draw_text(f"Starting in {int(start_timer) + 1}...", 0, -60, size=30)
+        if game_state == GAME_MENU:
+            # رسم صورة البداية لتملأ الشاشة
+            draw_texture("first_bg", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+            
+            # اختياري: إضافة نص يخبر اللاعب كيف يبدأ
+            # draw_text("Press ENTER to Start", -120, -250, size=30)
+
+        elif game_state == GAME_START:
             draw_texture("start", 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-            draw_text(f"Starting in {int(start_timer) + 1}...", 0, -300, size=30)
+            draw_text(f"Starting in {int(start_timer) + 1}...", -100, -250, size=30)
             
 
         elif game_state == GAME_PLAYING:
@@ -337,6 +245,21 @@ def main():
             for p in pellets: draw_texture("pellet", p[0], p[1], 10, 10)
             for p in power: draw_texture("power", p[0], p[1], 30, 30)
             draw_text(f"Score: {player.score}", -SCREEN_WIDTH/2 + 20, SCREEN_HEIGHT/2 - 20, 35)
+            max_lives = 5 
+            heart_size = 30
+            start_x = SCREEN_WIDTH/2 - 220 
+            y_pos = SCREEN_HEIGHT/2 - 40
+
+            for i in range(max_lives):
+                heart_type = "heart_red" if i < player.lives else "heart_broken"
+                
+                draw_texture(
+                    heart_type, 
+                    start_x + (i * (heart_size + 10)), 
+                    y_pos, 
+                    heart_size, 
+                    heart_size
+                )
             for i, e in enumerate(enemies):
                 enemy_skins = ["enemy_red", "enemy_blue", "enemy_purple"]
                 current_skin = enemy_skins[i % len(enemy_skins)]
@@ -368,9 +291,26 @@ def main():
             # draw_text("Press anywhere to play again", 0, -100, size=30)
 
 
+            # angle = player.get_angle()
+            # draw_texture_rotated(
+            #     "pacman",
+            #     player.pos[0],
+            #     player.pos[1],
+            #     26,
+            #     26,
+            #     angle
+            # )
+
             angle = player.get_angle()
+            
+            # تحديد الصورة الحالية بناءً على الإطار (0 أو 1)
+            if player.anim_frame == 0:
+                current_pacman = "pacman"
+            else:
+                current_pacman = "pacman_closed"
+
             draw_texture_rotated(
-                "pacman",
+                current_pacman, # استخدمي المتغير هنا بدلاً من "pacman" الثابتة
                 player.pos[0],
                 player.pos[1],
                 26,
@@ -380,26 +320,29 @@ def main():
 
 
 
+
+
+
         # --- RENDER  ---
         glLoadIdentity()
         
         # draw_text(f"Score: {player.score}", -SCREEN_WIDTH/2 + 20, SCREEN_HEIGHT/2 - 20, 35)
 
-        max_lives = 5 
-        heart_size = 30
-        start_x = SCREEN_WIDTH/2 - 220 
-        y_pos = SCREEN_HEIGHT/2 - 40
+        # max_lives = 5 
+        # heart_size = 30
+        # start_x = SCREEN_WIDTH/2 - 220 
+        # y_pos = SCREEN_HEIGHT/2 - 40
 
-        for i in range(max_lives):
-            heart_type = "heart_red" if i < player.lives else "heart_broken"
+        # for i in range(max_lives):
+        #     heart_type = "heart_red" if i < player.lives else "heart_broken"
             
-            draw_texture(
-                heart_type, 
-                start_x + (i * (heart_size + 10)), 
-                y_pos, 
-                heart_size, 
-                heart_size
-            )
+        #     draw_texture(
+        #         heart_type, 
+        #         start_x + (i * (heart_size + 10)), 
+        #         y_pos, 
+        #         heart_size, 
+        #         heart_size
+        #     )
 
         glDisable(GL_BLEND) 
 
