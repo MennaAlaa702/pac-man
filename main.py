@@ -208,20 +208,7 @@ def main():
                     score_popup = True
                     popup_timer = 1.5
 
-                # WIN CHECK
-            # if len(pellets) == 0:
-            #     win_popup = True
-            #     popup_timer = 3.0
-                        
-
-        # if len(pellets) == 0 :
-        #     game_state = GAME_WIN
-
-        # elif game_state == GAME_WIN:
-        #     # إعادة اللعب عند الضغط
-        #     if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
-        #         main() # إعادة تشغيل الدالة
-        #         return # نخرج من النسخة الحالية
+ 
 
         # --- 2. RENDER ---
         glClear(GL_COLOR_BUFFER_BIT)
@@ -278,28 +265,6 @@ def main():
                 if popup_timer <= 0:
                     score_popup = False
 
-            # if win_popup:
-            #     draw_text("GOOD!", 0, 0, size=100, color=(0, 255, 0),fontname="Cooper Black")
-            #     popup_timer -= dt
-            #     if popup_timer <= 0:
-            #         win_popup = False
-            #         game_state = GAME_WIN  
-
-        # elif game_state == GAME_WIN:
-            # draw_text("YOU WIN!", 0, 100, size=80, color=(0, 255, 0))
-            # draw_text(f"Score: {player.score}", 0, 0, size=40)
-            # draw_text("Press anywhere to play again", 0, -100, size=30)
-
-
-            # angle = player.get_angle()
-            # draw_texture_rotated(
-            #     "pacman",
-            #     player.pos[0],
-            #     player.pos[1],
-            #     26,
-            #     26,
-            #     angle
-            # )
 
             angle = player.get_angle()
             
@@ -313,8 +278,8 @@ def main():
                 current_pacman, # استخدمي المتغير هنا بدلاً من "pacman" الثابتة
                 player.pos[0],
                 player.pos[1],
-                26,
-                26,
+                CELL_SIZE,
+                CELL_SIZE,
                 angle
             )
 
@@ -326,23 +291,7 @@ def main():
         # --- RENDER  ---
         glLoadIdentity()
         
-        # draw_text(f"Score: {player.score}", -SCREEN_WIDTH/2 + 20, SCREEN_HEIGHT/2 - 20, 35)
-
-        # max_lives = 5 
-        # heart_size = 30
-        # start_x = SCREEN_WIDTH/2 - 220 
-        # y_pos = SCREEN_HEIGHT/2 - 40
-
-        # for i in range(max_lives):
-        #     heart_type = "heart_red" if i < player.lives else "heart_broken"
-            
-        #     draw_texture(
-        #         heart_type, 
-        #         start_x + (i * (heart_size + 10)), 
-        #         y_pos, 
-        #         heart_size, 
-        #         heart_size
-        #     )
+    
 
         glDisable(GL_BLEND) 
 

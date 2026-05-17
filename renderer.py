@@ -56,7 +56,7 @@ def draw_texture(name, x, y, w, h):
     glBindTexture(GL_TEXTURE_2D, tex)
 
     glColor3f(1, 1, 1)
-    glBegin(GL_QUADS)
+    glBegin(GL_TRIANGLE_FAN)
     glTexCoord2f(0, 0); glVertex2f(x - w/2, y - h/2)
     glTexCoord2f(1, 0); glVertex2f(x + w/2, y - h/2)
     glTexCoord2f(1, 1); glVertex2f(x + w/2, y + h/2)
@@ -83,7 +83,7 @@ def draw_texture_rotated(name, x, y, w, h, angle):
     glRotatef(angle, 0, 0, 1)
 
     # Draw centered quad
-    glBegin(GL_QUADS)
+    glBegin(GL_TRIANGLE_FAN)
     glTexCoord2f(0, 0); glVertex2f(-w/2, -h/2)
     glTexCoord2f(1, 0); glVertex2f(w/2, -h/2)
     glTexCoord2f(1, 1); glVertex2f(w/2, h/2)
@@ -125,11 +125,7 @@ def draw_text(text, x, y, size=30):
     glDisable(GL_TEXTURE_2D)
     glDeleteTextures(1, [tex])
 
-# def draw_retry_button():
-#     glColor3f(0.1, 0.3, 0.7)
-#     glRectf(-110, -320, 110, -240) 
-#     glColor3f(1, 1, 1)
-#     draw_text("RETRY", -45, -270, 35)
+
 
 def show_win_screen(window, score):
     try:
@@ -163,7 +159,7 @@ def show_win_screen(window, score):
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, text_texture)
         
-        glBegin(GL_QUADS)
+        glBegin(GL_TRIANGLE_FAN)
         half_w, half_h = width / 2, height / 2
         y_text_offset = -150  
         glTexCoord2f(0, 0); glVertex2f(-half_w, y_text_offset - half_h)
@@ -223,7 +219,7 @@ def show_game_over_screen(window, score):
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, text_texture)
         
-        glBegin(GL_QUADS)
+        glBegin(GL_TRIANGLE_FAN)
         half_w, half_h = width / 2, height / 2
         y_text_offset = -80 
         glTexCoord2f(0, 0); glVertex2f(-half_w, y_text_offset - half_h)
@@ -317,3 +313,4 @@ class Button3D:
         glVertex2f(cx + w/2, cy + h/2)
         glVertex2f(cx - w/2, cy + h/2)
         glEnd()
+        
